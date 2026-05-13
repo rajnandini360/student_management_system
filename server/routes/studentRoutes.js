@@ -71,5 +71,29 @@ router.delete("/:id", (req, res) => {
         }
     );
 });
+// UPDATE STUDENT
+router.put("/:id", (req, res) => {
+
+    const id = req.params.id;
+
+    const { name, email, course } = req.body;
+
+    db.query(
+        "UPDATE students SET name=?, email=?, course=? WHERE id=?",
+        [name, email, course, id],
+        (err, result) => {
+
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            res.json({
+                message: "Student updated successfully"
+            });
+
+        }
+    );
+
+});
 
 module.exports = router;
