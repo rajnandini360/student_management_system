@@ -1,13 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
-
+const verifyToken = require("../middleware/authMiddleware");
 // GET all students
-router.get("/", (req, res) => {
-    db.query("SELECT * FROM students", (err, result) => {
-        if (err) return res.status(500).send(err);
-        res.json(result);
-    });
+router.get("/", verifyToken, (req, res) => {
+
+    // ADMIN CAN SEE ALL
+    if (req.user.role === "admin") {
+
+        db.query(
+            "SELECT * FROM students",
+            (err, result) => {
+
+                if (err) {
+                    return res.status(500).json(err);
+                }
+
+                res.json(result);
+
+            }
+        );
+
+    }
+
+    // STUDENT CAN SEE ONLY OWN DATA
+    else {
+
+        db.query(
+            "SELECT * FROM students WHERE email = ?",
+            [req.user.email],
+            (err, result) => {
+
+                if (err) {
+                    return res.status(500).json(err);
+                }
+
+                res.json(result);
+
+            }
+        );
+
+    }
+
 });
 
 // ADD student

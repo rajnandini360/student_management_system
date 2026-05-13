@@ -1,105 +1,62 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "./index.css";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  const [students, setStudents] = useState([]);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [course, setCourse] = useState("");
-
-  // GET students
-  const loadStudents = () => {
-    axios.get("http://localhost:5000/students")
-      .then((res) => setStudents(res.data))
-      .catch((err) => console.log(err));
-  };
-
-  useEffect(() => {
-    loadStudents();
-  }, []);
-
-  // ADD student
-  const addStudent = () => {
-    if (!name || !email || !course) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    axios.post("http://localhost:5000/students", {
-      name,
-      email,
-      course
-    }).then(() => {
-      setName("");
-      setEmail("");
-      setCourse("");
-      loadStudents();
-    });
-  };
-
-  // DELETE student
-  const deleteStudent = (id) => {
-    axios.delete(`http://localhost:5000/students/${id}`)
-      .then(() => loadStudents())
-      .catch((err) => console.log(err));
-  };
 
   return (
-    <div className="container">
-      <h1>🎓 Student Management System</h1>
 
-      {/* FORM */}
-      <div className="form">
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          placeholder="Course"
-          value={course}
-          onChange={(e) => setCourse(e.target.value)}
-        />
+    <BrowserRouter>
 
-        <button onClick={addStudent}>Add Student</button>
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
+
+        {/* NAVBAR */}
+        <nav className="bg-white shadow-md px-8 py-4 flex justify-between items-center">
+
+          <h1 className="text-2xl font-bold text-indigo-700">
+            🎓 Student Management System
+          </h1>
+
+          <div className="flex gap-4">
+
+            <Link
+              to="/"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              Login
+            </Link>
+
+            <Link
+              to="/register"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              Register
+            </Link>
+
+          </div>
+
+        </nav>
+
+
+        {/* ROUTES */}
+        <Routes>
+
+          <Route path="/" element={<Login />} />
+
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+
+        </Routes>
+
       </div>
 
-      {/* TABLE */}
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Course</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+    </BrowserRouter>
 
-        <tbody>
-          {students.map((s) => (
-            <tr key={s.id}>
-              <td>{s.id}</td>
-              <td>{s.name}</td>
-              <td>{s.email}</td>
-              <td>{s.course}</td>
-              <td>
-                <button className="delete" onClick={() => deleteStudent(s.id)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
   );
+
 }
 
 export default App;
